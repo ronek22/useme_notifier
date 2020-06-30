@@ -38,7 +38,7 @@ def check_result_send_mess():
     
     jobs_db.close()
 
-schedule.every().minute.do(check_result_send_mess)
+schedule.every().hour.do(check_result_send_mess)
 
 # infinite loop
 while True:
