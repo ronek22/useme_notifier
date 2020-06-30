@@ -13,6 +13,7 @@ def send_message(chat_id, text):
     message = requests.post(f"{api}bot{bot_token}/sendMessage", data=parameters)
 
 def check_result_send_mess():
+    print("Checking new jobs...")
 
     try:
         DATABASE_URL = os.environ['DATABASE_URL']
@@ -37,7 +38,7 @@ def check_result_send_mess():
     
     jobs_db.close()
 
-schedule.every().hour.do(check_result_send_mess)
+schedule.every().minute.do(check_result_send_mess)
 
 # infinite loop
 while True:
