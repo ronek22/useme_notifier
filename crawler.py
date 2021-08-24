@@ -4,17 +4,16 @@ from pprint import pprint
 
 domain = 'https://useme.com'
 default_link = "https://useme.com/pl/jobs/category/programowanie-i-IT,2/"
-default_link_class = "#job-list > .row >.summary > .wrapper > h2 > a"
+default_link_class = ".jobs > .job > .job__headline > .job__title > a"
 
 class Job:
     def __init__(self, title, link):
         self.title = title
         self.link = link
 
-    def fill_job(self, description, salary, expires, tags):
+    def fill_job(self, description, salary, tags):
         self.description = description
         self.salary = salary
-        self.expires = expires
         self.tags = tags
     
     def print(self):
@@ -22,7 +21,7 @@ class Job:
 *{self.title}* 
 {self.link}
 *Tags:* {self.tags}
-Salary: *{self.salary}* | Expires: *{self.expires}*
+Salary: *{self.salary}*
         '''
 
     def __repr__(self):
@@ -38,12 +37,11 @@ class Crawler:
         for job in self.jobs:
             details_page = requests.get(job.link, timeout=5)
             content = bs(details_page.content, 'html.parser')
-            description = content.select('.section:nth-of-type(1) > .wrapper')[0].get_text().replace('\r', '').replace('\n\n', '\n')
-            tags = ' '.join([x.get_text() for x in content.select('.section:nth-of-type(2) > .wrapper > span')])
-            expires = content.find(text="Wygasa:").findNext('dd').get_text().strip()
-            salary = content.find(text="Szacunkowy budżet:").findNext('dd').get_text().strip()
+            description = content.select('.job-details__main-desc')[0].get_text().replace('\r', '').replace('\n\n', '\n')
+            tags = ' '.join([x.get_text() for x in content.select('.skill-box > .skill')])
+            salary = content.find(text="Budżet:").findNext('p').get_text().strip()
 
-            job.fill_job(description, salary, expires, tags)
+            job.fill_job(description, salary, tags)
 
     def get_offers(self, link_class=default_link_class):
         website_request = requests.get(self.website_link, timeout=10)
